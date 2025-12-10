@@ -1,68 +1,47 @@
 <?php
 
+require_once dirname(__DIR__) . '/models/Kendaraan.php';
 
-require_once dirname(__DIR__) . '/models/Pengguna.php';
-require_once dirname(__DIR__) . '/utils/JWT.php';
-
-class AuthService
+class KendaraanService
 {
-    private $pengguna;
-    private $jwt;
+    private $kendaraan;
 
     public function __construct()
     {
-        $this->pengguna = new Pengguna();
-        $this->jwt = new JWT();
+        $this->kendaraan = new Kendaraan();
     }
 
-    
-    public function login($email, $password)
+    public function semua()
     {
-        $user = $this->pengguna->findByEmail($email);
-
-        if (!$user) {
-            return ['sukses' => false, 'pesan' => 'Email tidak ditemukan'];
-        }
-
-        if (!isset($user['password']) || !password_verify($password, $user['password'])) {
-            return ['sukses' => false, 'pesan' => 'Password salah'];
-        }
-
-        $token = $this->jwt->buatToken([
-            'id' => $user['id'],
-            'email' => $user['email'],
-            'role' => $user['role']
-        ]);
-
-        return [
-            'sukses' => true,
-            'token' => $token,
-            'pengguna' => [
-                'id' => $user['id'],
-                'nama' => $user['nama'],
-                'email' => $user['email'],
-                'role' => $user['role']
-            ]
-        ];
+        return $this->kendaraan->semua();
     }
 
-    public function registrasi(array $data)
+    public function ambil($id)
     {
-        
-        if (empty($data['email']) || empty($data['password']) || empty($data['nama'])) {
-            return ['sukses' => false, 'pesan' => 'Nama, email, dan password wajib diisi'];
+        return $this->kendaraan->ambil($id);
+    }
+
+    public function catat(array $data)
+    {
+        if (empty($data['plat_nomor'])) {
+            return ['error' => 'Plat nomor wajib'];
         }
 
-        
-        if ($this->pengguna->findByEmail($data['email'])) {
-            return ['sukses' => false, 'pesan' => 'Email sudah terdaftar'];
-        }
+        return $this->kendaraan->buat($data);
+    }
 
-        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+    public function update($id, array $data)
+    {
+        return $this->kendaraan->update($id, $data);
+    }
 
-        $id = $this->pengguna->buat($data);
-        if ($id) return ['sukses' => true, 'id' => $id];
+    public function hapus($id)
+    {
+        return $this->kendaraan->hapus($id);
+    }
 
-        return ['sukses' => false, 'pesan' => 'Gagal menyimpan pengguna'];
+    public function cariByPlat($plat)
+    {
+        return $this->kendaraan->cariByPlat($plat);
     }
 }

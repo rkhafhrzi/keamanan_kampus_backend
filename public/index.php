@@ -71,6 +71,19 @@ route('GET', 'insiden/ambil', fn() => (new InsidenController())->ambil());
 route('POST', 'log/catat', fn() => (new LogController())->catatAktivitas());
 route('GET', 'log/semua', fn() => (new LogController())->semua());
 
+route('POST', 'tamu/tambah', fn() => (new TamuController())->tambahTamu());
+route('GET', 'tamu/daftar', fn() => (new TamuController())->daftar());
+route('GET', 'tamu/ambil', fn() => (new TamuController())->ambil());
+route('PUT', 'tamu/update', fn() => (new TamuController())->update());
+route('PUT', 'tamu/keluar', fn() => (new TamuController())->keluarTamu());
+route('DELETE', 'tamu/hapus', fn() => (new TamuController())->hapus());
+
+route('POST', 'ruangan/tambah', fn() => (new RuanganController())->tambah());
+route('GET', 'ruangan/daftar', fn() => (new RuanganController())->daftar());
+route('GET', 'ruangan/ambil', fn() => (new RuanganController())->ambil());
+route('PUT', 'ruangan/update', fn() => (new RuanganController())->update());
+route('DELETE', 'ruangan/hapus', fn() => (new RuanganController())->hapus());
+
 http_response_code(404);
 echo json_encode(["status" => "error", "pesan" => "Endpoint tidak ditemukan"]);
 exit;

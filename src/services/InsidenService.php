@@ -1,6 +1,5 @@
 <?php
 
-
 require_once dirname(__DIR__) . '/models/Insiden.php';
 
 class InsidenService
@@ -22,12 +21,13 @@ class InsidenService
         return $this->insiden->ambil($id);
     }
 
-    public function catat(array $data)
+    public function buat(array $data)
     {
+        if (empty($data['judul']) || empty($data['kategori']))
+            return ['error' => 'Judul dan kategori wajib'];
+
         return $this->insiden->buat($data);
     }
-
-    public function kirim(array $data) { return $this->catat($data); }
 
     public function update($id, array $data)
     {
@@ -37,10 +37,5 @@ class InsidenService
     public function hapus($id)
     {
         return $this->insiden->hapus($id);
-    }
-
-    public function statistikBulanan($tahun = null)
-    {
-        return $this->insiden->frekuensiPerBulan($tahun);
     }
 }

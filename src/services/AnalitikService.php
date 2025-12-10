@@ -1,39 +1,52 @@
 <?php
 
-
-require_once dirname(__DIR__) . '/models/Insiden.php';
-require_once dirname(__DIR__) . '/models/Kendaraan.php';
-require_once dirname(__DIR__) . '/models/Tamu.php';
-
 class AnalitikService
 {
-    private $insiden;
-    private $kendaraan;
-    private $tamu;
-
-    public function __construct()
-    {
-        $this->insiden = new Insiden();
-        $this->kendaraan = new Kendaraan();
-        $this->tamu = new Tamu();
-    }
-
-    public function ringkas()
+    
+    public function hitungStatistik($insiden, $tamu, $kendaraan)
     {
         return [
-            'total_insiden' => count($this->insiden->semua()),
-            'total_kendaraan' => count($this->kendaraan->semua()),
-            'total_tamu_hari_ini' => count($this->filterTamuHariIni())
+            'total_insiden' => count($insiden),
+            'total_tamu' => count($tamu),
+            'total_kendaraan' => count($kendaraan),
+            'insiden_per_kategori' => $this->kelompokkanInsiden($insiden),
+            'tamu_per_hari' => $this->kelompokkanTamu($tamu)
         ];
     }
 
-    private function filterTamuHariIni()
+    
+    public function rekomendasi()
     {
-        $list = $this->tamu->semua();
-        $today = date('Y-m-d');
+        return [
+            "Perbanyak patroli keamanan pada jam rawan.",
+            "Perlu pemasangan CCTV tambahan pada area parkir belakang.",
+            "Sosialisasi keamanan bagi mahasiswa baru.",
+            "Tingkatkan pencatatan tamu dengan verifikasi identitas.",
+            "Optimalkan penggunaan QR Code untuk akses ruangan."
+        ];
+    }
 
-        return array_filter($list, function ($t) use ($today) {
-            return substr($t['jam_masuk'], 0, 10) === $today;
-        });
+    
+    private function kelompokkanInsiden($data)
+    {
+        $hasil = [];
+        foreach ($data as $row) {
+            $kat = $row['kategori'] ?? 'lainnya';
+            if (!isset($hasil[$kat])) $hasil[$kat] = 0;
+            $hasil[$kat]++;
+        }
+        return $hasil;
+    }
+
+   
+    private function kelompokkanTamu($data)
+    {
+        $hasil = [];
+        foreach ($data as $row) {
+            $tgl = substr($row['jam_masuk'], 0, 10);
+            if (!isset($hasil[$tgl])) $hasil[$tgl] = 0;
+            $hasil[$tgl]++;
+        }
+        return $hasil;
     }
 }
