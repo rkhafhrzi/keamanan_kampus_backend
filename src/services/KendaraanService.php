@@ -1,6 +1,5 @@
 <?php
 
-
 require_once dirname(__DIR__) . '/models/Kendaraan.php';
 
 class KendaraanService
@@ -24,6 +23,10 @@ class KendaraanService
 
     public function catat(array $data)
     {
+        if (empty($data['plat_nomor'])) {
+            return ['error' => 'Plat nomor wajib'];
+        }
+
         return $this->kendaraan->buat($data);
     }
 

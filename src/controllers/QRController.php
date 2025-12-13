@@ -1,6 +1,6 @@
 <?php
 
-
+   
 require_once dirname(__DIR__) . '/services/QRService.php';
 require_once dirname(__DIR__) . '/utils/Respons.php';
 

@@ -1,6 +1,5 @@
 <?php
 
-
 require_once dirname(__DIR__) . '/services/AuthService.php';
 require_once dirname(__DIR__) . '/utils/Respons.php';
 
@@ -44,7 +43,6 @@ class AuthController
             Respons::gagal($hasil['pesan'] ?? 'Login gagal', 401);
         }
 
-
         Respons::sukses([
             'token' => $hasil['token'],
             'pengguna' => $hasil['pengguna']
@@ -53,7 +51,6 @@ class AuthController
 
     public function logout()
     {
-        
         Respons::sukses(['pesan' => 'Logout berhasil']);
     }
 }

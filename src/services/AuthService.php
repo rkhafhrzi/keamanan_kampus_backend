@@ -1,47 +1,51 @@
 <?php
 
-require_once dirname(__DIR__) . '/models/Kendaraan.php';
+require_once dirname(__DIR__) . '/models/Pengguna.php';
+require_once dirname(__DIR__) . '/utils/JWT.php';
 
-class KendaraanService
+class AuthService
 {
-    private $kendaraan;
+    private $pengguna;
 
     public function __construct()
     {
-        $this->kendaraan = new Kendaraan();
+        $this->pengguna = new Pengguna();
     }
 
-    public function semua()
+    public function registrasi(array $data)
     {
-        return $this->kendaraan->semua();
-    }
-
-    public function ambil($id)
-    {
-        return $this->kendaraan->ambil($id);
-    }
-
-    public function catat(array $data)
-    {
-        if (empty($data['plat_nomor'])) {
-            return ['error' => 'Plat nomor wajib'];
+        if (empty($data['email']) || empty($data['password']) || empty($data['nama'])) {
+            return ['sukses' => false, 'pesan' => 'Data tidak lengkap'];
         }
 
-        return $this->kendaraan->buat($data);
+        if ($this->pengguna->findByEmail($data['email'])) {
+            return ['sukses' => false, 'pesan' => 'Email sudah terdaftar'];
+        }
+
+        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        $id = $this->pengguna->buat($data);
+
+        return ['sukses' => true, 'id' => $id];
     }
 
-    public function update($id, array $data)
+    public function login($email, $password)
     {
-        return $this->kendaraan->update($id, $data);
-    }
+        $user = $this->pengguna->findByEmail($email);
+        if (!$user || !password_verify($password, $user['password'])) {
+            return ['sukses' => false, 'pesan' => 'Email atau password salah'];
+        }
 
-    public function hapus($id)
-    {
-        return $this->kendaraan->hapus($id);
-    }
+        $token = JWT::encode([
+            'id' => $user['id'],
+            'role' => $user['role']
+        ]);
 
-    public function cariByPlat($plat)
-    {
-        return $this->kendaraan->cariByPlat($plat);
+        unset($user['password']);
+
+        return [
+            'sukses' => true,
+            'token' => $token,
+            'pengguna' => $user
+        ];
     }
 }
